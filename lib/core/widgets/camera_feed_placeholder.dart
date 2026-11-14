@@ -31,7 +31,11 @@ class CameraFeedPlaceholder extends StatelessWidget {
         child: Image.asset(
           scene == CameraScene.front ? kFrontCameraAsset : kCabinCameraAsset,
           fit: BoxFit.cover,
-          alignment: Alignment.center,
+          // Cabin: bias the crop upward so the occupants' heads stay in frame
+          // on wide (landscape) previews.
+          alignment: scene == CameraScene.cabin
+              ? const Alignment(0, -0.5)
+              : Alignment.center,
           filterQuality: FilterQuality.medium,
           gaplessPlayback: true,
           semanticLabel: scene == CameraScene.front

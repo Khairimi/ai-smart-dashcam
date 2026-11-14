@@ -66,6 +66,12 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  # DEMO camera previews (bundled, no network): front = road-facing,
+  # cabin = driver and front passenger. AI-generated sample images.
+  assets:
+    - assets/images/dashcam_front.jpg
+    - assets/images/dashcam_cabin.jpg
+
   # To add assets to your application, add an assets section, like this:
   # assets:
   #   - images/a_dot_burr.jpeg

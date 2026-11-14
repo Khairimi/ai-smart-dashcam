@@ -229,3 +229,18 @@ action); the Alert Sound pill's tap was swallowed by its row (the whole row now 
 Remaining limitations: sample data resets on restart (only the 12 settings toggles persist); the mobile Home shortcuts and the mobile camera / hub /
 trips / parking screens are not in Figma (built from existing components); landscape has no Home / Accident / Find My Car screens (INCOMPLETE and
 not reachable from the UI); local `flutter test` is blocked on the owner's PC, so CI is the test runner.
+
+## Front / Cabin camera demo previews
+
+- `assets/images/dashcam_front.jpg` (road-facing: daytime highway, cars and a truck ahead) and `assets/images/dashcam_cabin.jpg` (driver and front
+  passenger, daytime) — both 1920×1080 JPG, bundled locally and registered in `pubspec.yaml`; no network or camera access. Shown with `BoxFit.cover`
+  (cropped, never stretched); a vector scene is the fallback if an asset fails to load.
+- **Provenance / licence:** both pictures were AI-generated through the owner's Canva account (fictional people, no text) and exported from two
+  temporary Canva designs. Confirm Canva's content-licence terms cover your use; no attribution file is included.
+- **Export limitation:** Canva's connector only allowed the design's native size (1920×1080). Custom sizes (e.g. the 2720×1536 original) were
+  refused with "Not allowed to access design", so the images are 1920 px wide, not the full 2720 px. They are real exports, not thumbnails.
+- Verified (debug build, console watched): no overflow or layout errors at 1672×941, 1280×800, 1024×768, 768×1024, 390×844 and 320×568.
+- Verified (final release build, real Chrome, desktop / tablet 1280×800 / mobile 390×844): 28/28 checks — Camera ON/OFF on both cameras ("Front Camera OFF" /
+  "Cabin Camera OFF", FRONT/CABIN label kept, header REC pill shows CAMERA OFF), Simulate drowsiness → DEMO warning, Ignore and Clear alert dismiss it.
+  Screenshots: `docs/qa-screenshots/camera/`.
+- Known: on a tall (portrait tablet) frame the cabin picture is cropped horizontally, so both occupants cannot be fully shown; mobile portrait and all landscape sizes show both.
