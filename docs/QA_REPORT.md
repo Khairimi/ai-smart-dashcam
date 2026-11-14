@@ -126,8 +126,49 @@ match at 390 px. `M_wip_audio` (unfinished Figma frame) is intentionally an INCO
 | Colours / fonts / sizes | Still sampled/estimated, not read from Inspect | unverified |
 | Text at 320 px | Some titles truncate with an ellipsis ("Dashcam Con…", "Parking & Vehicle Secur…") | acceptable |
 
-### Verdict
+### Verdict (before the fix)
 
-**FAIL (narrow):** one medium-severity overflow at 320 px on mobile Home. No critical or high issues were found; all other
-routes, sizes and interactions passed. Remaining before approval: fix the 320 px Home card, confirm the hold-to-activate
-fill in a real browser, and (optional) tidy the two cosmetic differences.
+**FAIL (narrow):** one medium-severity overflow at 320 px on mobile Home.
+
+## Phase 4 — Home 320 px overflow fix and re-verification
+
+Changes (only `lib/features/home/home_dashboard_screen.dart`):
+1. The "AI Cabin Monitoring" rows are now a plain `Row` (label + pill on one line, the Figma layout) or a plain `Column`
+   (label above pill) chosen by a `LayoutBuilder` placed **outside** the `IntrinsicHeight`; threshold 132 px of inner card
+   width (an estimate, not a Figma value). 320 px stacks; 360/375/390 px keep the one-line Figma layout.
+2. The title "AI Cabin Monitoring" is a single line scaled down ~7% at 320 px via `FittedBox`. Root cause of the 17 px
+   overflow: the title wrapped to two lines at 320 px but `IntrinsicHeight` had measured one line. (A first attempt that
+   only replaced the `Wrap` did **not** fix it; the overflow persisted at `home_dashboard_screen.dart:134`.)
+3. Regression fixed: my earlier narrow-width change (`Flexible` + `Spacer`) truncated "Recording On" at every width
+   (the two split free space 50/50). Now `Expanded`; "Recording On" is complete at 360/375/390 px.
+
+Cold-load verification (debug build, console watched, content confirmed rendered before capture):
+
+| Width | Result | Evidence |
+|---|---|---|
+| 320×568 | PASS: no overflow or layout exceptions; Drowsiness/Normal, Distraction/Focused, Emotion/Calm, Seatbelt/Fastened all fully visible | `docs/qa-screenshots/fix/home_320_top.png`, `home_320_cabin.png` |
+| 360×640 | PASS | `fix/home_360_top.png` |
+| 375×812 | PASS | `fix/home_375_top.png` |
+| 390×844 | PASS | `fix/home_390_top.png` |
+
+Remaining small items at 320 px (not bugs of the card): "Dashcam Connected" and "Recording On" show an ellipsis
+("Dashcam Con…", "Recordin…") because the connection card is narrow.
+
+Lesson recorded: right after a debug-server restart the first page load can still be blank; two intermediate "no issues"
+results at 320 px were from unrendered pages and were discarded. The final run waited for the Home content to render.
+
+`flutter analyze`: PASS. `flutter build web --release`: PASS.
+
+### Hold-to-activate progress fill (SOS screen) — observed FAIL, not fixed
+
+Tested in a real, non-headless Chrome window (`/sos`, 1672×941): pressing and holding "Hold to Activate SOS" for 1.0 s and
+1.4 s shows **no progress fill** (`docs/qa-screenshots/interaction/L_sos_holding_headful_1_4s.png`), although a full 2 s hold
+does open the DEMO dialog and an early release does not. Probable cause (from reading the code, not yet verified by a fix):
+the fill is a child-less `ColoredBox` inside a `FractionallySizedBox` with no `heightFactor`, so it is laid out with zero
+height; setting `heightFactor: 1` would be the likely one-line fix in `lib/core/widgets/hold_to_activate_button.dart`.
+Outside the approved scope of this fix, so left unchanged pending approval.
+
+### Updated verdict
+
+Home 320 px overflow: **fixed and verified**. Phase 4 therefore has no open overflow defect. One cosmetic/functional-feedback
+defect remains (hold fill invisible) plus the cosmetic Figma differences listed above.

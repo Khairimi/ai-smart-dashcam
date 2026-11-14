@@ -5,6 +5,11 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/widgets/widgets.dart';
 
+/// Minimum inner card width (px) at which a cabin row (label + pill) fits on
+/// one line; below it the label sits above the pill. Measured against the
+/// widest row ("Distraction" + "Focused") — an estimate, not a Figma value.
+const double _kCabinRowMinInline = 132;
+
 /// Mobile 01 — Home Dashboard (`4-3`). Every value (connection, speed, trip
 /// duration, passengers, cabin AI states, location) is a SIMULATED sample;
 /// no dashcam, AI or GPS is connected.
@@ -66,13 +71,14 @@ class HomeDashboardScreen extends StatelessWidget {
                         const Icon(Icons.circle,
                             color: AppColors.redSos, size: 8),
                         const SizedBox(width: 8),
-                        Flexible(
+                        // Expanded (not Flexible + Spacer, which split the free
+                        // space 50/50 and truncated the text needlessly).
+                        Expanded(
                           child: Text('Recording On',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: AppTypography.body),
                         ),
-                        const Spacer(),
                         const SimulatedBadge(),
                       ]),
                     ],
@@ -91,66 +97,75 @@ class HomeDashboardScreen extends StatelessWidget {
               ]),
             ),
             const SizedBox(height: 12),
-            IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                    child: CreamCard(
-                      color: bg,
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Live Location ›', style: AppTypography.label),
-                          const SizedBox(height: 8),
-                          const SizedBox(
-                              height: 110, child: MapPlaceholder(markers: 8)),
-                        ],
+            // The layout choice is made by a LayoutBuilder placed OUTSIDE the
+            // IntrinsicHeight (LayoutBuilder inside it is not allowed). Each
+            // row below is a plain Row/Column, so its intrinsic height is exact.
+            LayoutBuilder(
+              builder: (context, c) {
+                // Inner width of one half-width card (gap 12, padding 12 each side).
+                final inner = (c.maxWidth - 12) / 2 - 24;
+                final stacked = inner < _kCabinRowMinInline;
+                return IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(
+                        child: CreamCard(
+                          color: bg,
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Live Location ›',
+                                  style: AppTypography.label),
+                              const SizedBox(height: 8),
+                              const SizedBox(
+                                  height: 110,
+                                  child: MapPlaceholder(markers: 8)),
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: CreamCard(
-                      color: bg,
-                      padding: const EdgeInsets.all(12),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('AI Cabin Monitoring',
-                              style: AppTypography.label),
-                          const SizedBox(height: 8),
-                          for (final r in const [
-                            ('Drowsiness', 'Normal'),
-                            ('Distraction', 'Focused'),
-                            ('Emotion', 'Calm'),
-                            ('Seatbelt', 'Fastened'),
-                          ])
-                            Padding(
-                              padding: const EdgeInsets.only(bottom: 6),
-                              // Wrap (not LayoutBuilder): this sits inside an
-                              // IntrinsicHeight, which forbids LayoutBuilder.
-                              // Label and pill share a row when they fit and
-                              // stack on narrow phones.
-                              child: SizedBox(
-                                width: double.infinity,
-                                child: Wrap(
-                                  alignment: WrapAlignment.spaceBetween,
-                                  crossAxisAlignment: WrapCrossAlignment.center,
-                                  children: [
-                                    Text(r.$1, style: AppTypography.caption),
-                                    StatusPill(label: r.$2),
-                                  ],
-                                ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: CreamCard(
+                          color: bg,
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              // Single line, scaled down slightly on very narrow
+                              // phones (~7% at 320 px) so the title never wraps:
+                              // a wrapped title was measured as one line by
+                              // IntrinsicHeight and overflowed by 17 px.
+                              FittedBox(
+                                fit: BoxFit.scaleDown,
+                                alignment: Alignment.centerLeft,
+                                child: Text('AI Cabin Monitoring',
+                                    maxLines: 1, style: AppTypography.label),
                               ),
-                            ),
-                        ],
+                              const SizedBox(height: 8),
+                              for (final r in const [
+                                ('Drowsiness', 'Normal'),
+                                ('Distraction', 'Focused'),
+                                ('Emotion', 'Calm'),
+                                ('Seatbelt', 'Fastened'),
+                              ])
+                                Padding(
+                                  padding: const EdgeInsets.only(bottom: 6),
+                                  child: _CabinRow(
+                                      label: r.$1,
+                                      value: r.$2,
+                                      stacked: stacked),
+                                ),
+                            ],
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
+                );
+              },
             ),
             const SizedBox(height: 20),
             Text('Quick Actions',
@@ -226,4 +241,42 @@ class _Action extends StatelessWidget {
           ]),
         ),
       );
+}
+
+/// One "AI Cabin Monitoring" row. Plain Row/Column so intrinsic height is exact.
+class _CabinRow extends StatelessWidget {
+  const _CabinRow({
+    required this.label,
+    required this.value,
+    required this.stacked,
+  });
+
+  final String label;
+  final String value;
+  final bool stacked;
+
+  @override
+  Widget build(BuildContext context) {
+    if (stacked) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: AppTypography.caption),
+          const SizedBox(height: 2),
+          StatusPill(label: value),
+        ],
+      );
+    }
+    return Row(
+      children: [
+        Expanded(
+          child: Text(label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: AppTypography.caption),
+        ),
+        StatusPill(label: value),
+      ],
+    );
+  }
 }
