@@ -1,6 +1,6 @@
 # Screen Mapping — Figma → Routes → Components
 
-Proposed, pending confirmation (see open questions in `ARCHITECTURE.md`).
+Approved 2026-11-14. Screens marked **INCOMPLETE** render the `IncompleteScreen` placeholder until the Figma frame is finished/captured.
 
 Feature classes: **F** fully implementable · **B** backend (Firebase) required · **H** external hardware/AI/API required (shipped as a labelled **SIMULATED** adapter) · **D** demo/mock only.
 
@@ -28,12 +28,12 @@ Persistent: `InCarHeader` (back, title, `RecIndicator`, profile icon) and `Quick
 | Figma | Node | Route | Widget | Tab | Classes |
 |---|---|---|---|---|---|
 | 01 Home Dashboard | `4-3` | `/home` | `home/home_dashboard_screen.dart` | Home | H (speed, cabin AI, location) · D |
-| 02 Find My Car | unresolved | `/trips/find-car` | `trips/find_my_car_screen.dart` | Trips | B (saved spot) · H (GPS, maps) |
-| 03 AI Cabin Monitoring | `48-8522` (WIP) | `/safety/cabin` | `safety/cabin_monitoring_screen.dart` | Safety | H — **design incomplete** |
-| 04 Manual SOS | unresolved | `/sos` | shared with landscape | — | as above |
-| 05 Voice SOS | unresolved | `/sos/voice` | shared | — | as above |
-| 06 Saved Parking | unresolved | `/trips/find-car/saved` | `trips/saved_parking_screen.dart` | Trips | B |
-| 07 Trip Sharing | unresolved | `/trips/share` | shared | Trips | as above |
+| 02 Find My Car — **INCOMPLETE** | unresolved | `/trips/find-car` | `trips/find_my_car_screen.dart` | Trips | B (saved spot) · H (GPS, maps) |
+| 03 AI Cabin Monitoring — **INCOMPLETE** | `48-8522` (WIP) | `/safety/cabin` | `safety/cabin_monitoring_screen.dart` | Safety | H — **design incomplete** |
+| 04 Manual SOS — **INCOMPLETE** | unresolved | `/sos` | shared with landscape | — | as above |
+| 05 Voice SOS — **INCOMPLETE** | unresolved | `/sos/voice` | shared | — | as above |
+| 06 Saved Parking — **INCOMPLETE** | unresolved | `/trips/find-car/saved` | `trips/saved_parking_screen.dart` | Trips | B |
+| 07 Trip Sharing — **INCOMPLETE** | unresolved | `/trips/share` | shared | Trips | as above |
 | 08 Accident SOS Alert | `4-378` | `/sos/accident` | `sos/accident_alert_screen.dart` | Records | H (crash detection) · F (call actions) |
 | "09" Records & Evidence | `9-4` | `/records` | `records/records_evidence_screen.dart` (mobile variant) | Records | B · H (video storage) |
 | "09" Parking & Security | `4-427` | `/safety/parking` | shared (mobile variant) | Safety | as above |

@@ -1,4 +1,4 @@
-# Architecture Recommendation (draft — awaiting approval)
+# Architecture (approved 2026-11-14)
 
 ## Recommendation: keep Flutter (single codebase)
 
@@ -38,7 +38,13 @@ Every value that would come from the dashcam, an AI model or GPS goes through an
 - 768–1023 → in-car layout with condensed side panels (derived, no Figma frame)
 - < 768 → `MobileShell` (bottom nav), tuned at 430/390/375/320
 
-## Open decisions (blocking)
+## Decisions
+
+- Approved: one Flutter codebase, separate adaptive layouts (in-car landscape + mobile).
+- Firebase login: **not implemented** for now.
+- Unfinished Figma screens: marked **INCOMPLETE** (see `IMPLEMENTATION_PLAN.md`).
+
+## Original open questions (for history)
 
 1. **One app or two?** The landscape frames (quick-nav: cameras/trip/hub/SOS) and the mobile frames (tabs: Home/Safety/Records/Trips/AI) have different navigation models. Proposed: one app with two shells sharing routes, as above.
 2. **Toolchain:** Flutter cannot be installed in Claude's sandbox (pub.dev and Google storage are blocked), so code written here can't be compiled or tested here. Verification would have to happen in GitHub Actions or on your machine.
