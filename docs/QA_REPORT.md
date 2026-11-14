@@ -192,7 +192,16 @@ discarded; they are not evidence about the app.
 not activate early; early release resets progress without activating; a full hold activates exactly once even if held longer
 and progress resets afterwards. Not runnable locally (Smart App Control); results are taken from GitHub Actions below.
 
-### Updated verdict
+CI history for this fix: run 43566653424 (`308b72f`) failed these 3 new tests because a single `pump(500ms)` after the press
+yields elapsed = 0 (a `Ticker` starts at the first frame after `forward()`); the tests were corrected with a zero-length
+`pump()` (assertions unchanged, widget unchanged). Run 43566830599 (`6133640`): analyze, `flutter test` (all 23 tests:
+13 + 7 + 3) and `flutter build web --release` all succeeded.
 
-Home 320 px overflow: **fixed and verified**. Phase 4 therefore has no open overflow defect. One cosmetic/functional-feedback
-defect remains (hold fill invisible) plus the cosmetic Figma differences listed above.
+### Final Phase 4 verdict
+
+**PASS.** Evidence: GitHub Actions run 43566830599 (`6133640`) green, 23/23 widget tests; `flutter analyze` and `flutter build web`
+clean; 31 cold page loads + re-verified Home at 320/360/375/390 px with no overflow or layout exceptions; 38/38 interaction
+checks and the hold-to-activate behaviour verified in real Chrome. Remaining items are cosmetic or known limitations:
+Voice SOS circle size and spare space (landscape), taller Records rows (landscape), small quick-nav/header icons, vector
+placeholders for camera/map art, ellipsis in "Dashcam Con…"/"Recordin…" at 320 px, and all Figma values (colours, fonts, sizes)
+still sampled/estimated rather than read from Inspect. Mobile screens without Figma frames remain INCOMPLETE placeholders.
