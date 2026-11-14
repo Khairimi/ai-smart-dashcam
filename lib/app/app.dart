@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '../core/theme/app_theme.dart';
 import 'router.dart';
 
-/// Root widget.
+/// Root widget. [router] can be injected (tests use a fresh router).
 class DashcamApp extends StatelessWidget {
-  const DashcamApp({super.key});
+  const DashcamApp({super.key, this.router});
+
+  final GoRouter? router;
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +16,7 @@ class DashcamApp extends StatelessWidget {
       title: 'AI Smart Dashcam',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
-      routerConfig: appRouter,
+      routerConfig: router ?? appRouter,
     );
   }
 }

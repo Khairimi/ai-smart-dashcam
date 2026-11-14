@@ -1,5 +1,10 @@
 export 'camera_feed_placeholder.dart';
 export 'cream_card.dart';
+export 'demo_dialog.dart';
+export 'hold_to_activate_button.dart';
+export 'map_placeholder.dart';
+export 'mobile_header.dart';
+export 'setting_row.dart';
 export 'icon_badge.dart';
 export 'in_car_header.dart';
 export 'incomplete_screen.dart';
