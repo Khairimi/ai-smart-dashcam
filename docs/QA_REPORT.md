@@ -70,3 +70,64 @@ font (Ahem) makes overflow assertions meaningless; the widget tests deliberately
 - The Accident SOS screen (`/sos/accident`) is not linked from the UI because there is no crash detection; reach it by URL.
 - Landscape/mobile frames that do not exist (landscape Home/Accident; mobile cameras/Hub/Audio/Rest Stop/SOS/Voice SOS/
   Trip Sharing/Find My Car/Saved Parking/Cabin Monitoring) render `INCOMPLETE`.
+
+## Phase 4 — Final visual QA (2026-11-14)
+
+Method: debug build served with `flutter run -d web-server` and driven in headless Chrome 157 over the DevTools protocol
+(exact viewport sizes, real mouse clicks through the page's accessibility tree, console capture). Debug mode was used because
+release builds hide RenderFlex overflow. No application code was changed during this review. Screenshots are in
+`docs/qa-screenshots/` (`1672x941/`, `390x844/`, `375x812/`, `320x568/`, `interaction/`).
+
+### Cold page loads (authoritative for overflow)
+
+Every route was loaded from scratch at each size and the browser console was checked.
+Note: navigating in-session (`pushState`) can hide a second overflow report, so an earlier in-session sweep that showed
+0 issues at 320 px was a false negative and is not relied on.
+
+| Set | Loads | Pass | Fail |
+|---|---|---|---|
+| Mobile 320×568 / 375×812 / 390×844 × (`/home`, `/safety/parking`, `/records`, `/ai`, `/sos/accident`, `/trips/find-car`) | 18 | 17 | 1 |
+| In-car 1672×941 × 13 routes (11 Figma screens + `/home`, `/trips/find-car` placeholders) | 13 | 13 | 0 |
+
+**FAIL — mobile Home at 320 px: "A RenderFlex overflowed by 17 pixels on the bottom"**
+(`lib/features/home/home_dashboard_screen.dart:118`, the "AI Cabin Monitoring" card). The card sits in an `IntrinsicHeight`
+row; at 320 px the label/pill `Wrap` stacks to two lines per row, so the content is 17 px taller than the intrinsic height.
+In release builds the overflow is clipped, hiding the "Emotion" and "Seatbelt" rows. Not reproduced at 360, 375 or 390 px.
+Severity: medium (data hidden on very small phones; no crash). **Not fixed** (review-only task).
+Screenshot: `docs/qa-screenshots/interaction/cold_home_320.png`.
+
+### Interaction tests (real clicks, debug build)
+
+38/38 scripted checks PASS, plus a separate toggle check (PASS): quick-nav and hub-card navigation; browser back/forward;
+header back; cold deep links; drowsiness alert (show, Ignore, Find Nearest Rest Stop → `/ai/rest-stop`); DEMO dialogs
+(Call Police, Share Link, Call Ambulance, recording row, parking row, AI replies) open and close; hold-to-activate (early
+release does not activate, a 2 s hold shows the DEMO dialog); Discreet Mode, Stop/Start Sharing and the parking switch
+(`aria-checked` true → false) toggle; resize 1672 → 390 → 1672 switches shells; five mobile tabs; Home quick action → INCOMPLETE;
+Accident → Records & Evidence link; scrolling at 320×568 reaches the bottom of long screens.
+
+Console during the scripted flows: 2 issues. (1) the 320 px overflow above. (2) an engine assertion in
+`_computeOnScreenKeyboardInsets` / `_handleBrowserResize`, which appears only with Chrome's *mobile emulation* flag and not
+with plain viewport resizing — attributed to the test harness, not the app.
+
+### Figma comparison (by eye; no pixel diff)
+
+All 19 references were compared against the implementation. Landscape L01–L11 and 02b: layout, colours, proportions and
+navigation match; mobile M01 Home, M08 Accident, M09 Parking, AI Assistant, Records & Evidence and the bottom-nav component
+match at 390 px. `M_wip_audio` (unfinished Figma frame) is intentionally an INCOMPLETE placeholder. Differences:
+
+| Area | Finding | Status |
+|---|---|---|
+| Voice SOS (landscape) | Green circle larger than in Figma; Quick Actions card has extra empty space below the pills | minor, FAIL (cosmetic) |
+| Records (landscape) | Row cards taller than Figma with different gaps | minor, FAIL (cosmetic) |
+| Quick-nav / header icons | Small relative to the 1672 frame (icons are not width-scaled) | minor |
+| Camera / cabin art | Simple vector placeholders, not the Figma illustrations | known, by design |
+| Rest Stop map | Dark grid placeholder; Figma map art unverified | known |
+| Hold-to-activate fill | Progress fill was not visible in any headless capture although activation works | INCONCLUSIVE — check in a real browser |
+| Colours / fonts / sizes | Still sampled/estimated, not read from Inspect | unverified |
+| Text at 320 px | Some titles truncate with an ellipsis ("Dashcam Con…", "Parking & Vehicle Secur…") | acceptable |
+
+### Verdict
+
+**FAIL (narrow):** one medium-severity overflow at 320 px on mobile Home. No critical or high issues were found; all other
+routes, sizes and interactions passed. Remaining before approval: fix the 320 px Home card, confirm the hold-to-activate
+fill in a real browser, and (optional) tidy the two cosmetic differences.
