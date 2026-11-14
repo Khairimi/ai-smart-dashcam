@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../core/theme/app_theme.dart';
 import 'router.dart';
 
-/// Root widget. Theme is a placeholder until Phase 3 (design system).
+/// Root widget.
 class DashcamApp extends StatelessWidget {
   const DashcamApp({super.key});
 
@@ -11,10 +12,7 @@ class DashcamApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'AI Smart Dashcam',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        useMaterial3: true,
-        scaffoldBackgroundColor: const Color(0xFFFAF1E8),
-      ),
+      theme: AppTheme.light,
       routerConfig: appRouter,
     );
   }

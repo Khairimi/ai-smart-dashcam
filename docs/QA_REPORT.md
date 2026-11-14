@@ -28,3 +28,15 @@ Flutter 3.47.9 (stable), Dart 3.13.7, Android SDK 36, Chrome 157, Windows 11 25H
 - **Impact:** widget/golden tests are written but cannot be executed locally. They can run in CI (GitHub Actions, Linux),
   or on a machine/dev-drive where Smart App Control permits the tester. Test results must not be claimed until executed.
 - **Status:** BLOCKED.
+
+## Phase 3 — design system
+
+| Check | Result | Notes |
+|---|---|---|
+| `flutter analyze` | PASS | No issues |
+| `flutter build web` | PASS | |
+| Visual check, release build (headless Chrome screenshot of `DesignGallery`) | PASS | All components render on cream bg; no console errors. Compared by eye against `docs/figma-reference` only — no pixel diff. |
+| Widget tests (`test/core_widgets_test.dart`, `test/widget_test.dart`) | **BLOCKED** | Written (8 tests) but not executed: Smart App Control blocks `flutter_tester.exe` (see above). Not claimed as passing. |
+
+Observations: in the headless run the Inter font was not visibly applied (Roboto-like fallback), consistent with
+`google_fonts` runtime fetching; bundle the font once the family is confirmed.
