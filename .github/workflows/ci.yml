@@ -21,5 +21,14 @@ jobs:
       - run: flutter --version
       - run: flutter pub get
       - run: flutter analyze
-      - run: flutter test --reporter github
+      - name: flutter test
+        shell: bash
+        run: |
+          set -o pipefail
+          flutter test --reporter expanded 2>&1 | tee test.log
+      # Diagnostics only: republish failing-test output as annotations so it is
+      # readable without admin access to the raw logs. Does not change results.
+      - name: Annotate test failures
+        if: failure()
+        run: python3 tool/annotate_test_failures.py test.log
       - run: flutter build web --release
