@@ -11,11 +11,15 @@ class InCarHeader extends StatelessWidget {
     required this.title,
     required this.recElapsed,
     this.onBack,
+    this.onCloud,
+    this.cameraOn = true,
   });
 
   final String title;
   final Duration recElapsed;
   final VoidCallback? onBack;
+  final VoidCallback? onCloud;
+  final bool cameraOn;
 
   @override
   Widget build(BuildContext context) {
@@ -31,9 +35,13 @@ class InCarHeader extends StatelessWidget {
           child: Text(title,
               overflow: TextOverflow.ellipsis, style: AppTypography.screenTitle),
         ),
-        RecIndicator(elapsed: recElapsed),
+        RecIndicator(elapsed: recElapsed, active: cameraOn),
         const SizedBox(width: AppSpacing.lg),
-        const Icon(Icons.cloud_outlined, size: 20),
+        IconButton(
+          tooltip: 'Cloud and alerts',
+          onPressed: onCloud,
+          icon: const Icon(Icons.cloud_outlined, size: 20),
+        ),
       ],
     );
   }

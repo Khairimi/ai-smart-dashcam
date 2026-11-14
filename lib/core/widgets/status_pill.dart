@@ -12,6 +12,7 @@ class StatusPill extends StatelessWidget {
     this.background = AppColors.greenTint,
     this.foreground = AppColors.greenAccent,
     this.leading,
+    this.onTap,
   });
 
   final String label;
@@ -19,9 +20,12 @@ class StatusPill extends StatelessWidget {
   final Color foreground;
   final Widget? leading;
 
+  /// Makes the pill a button (e.g. to cycle a DEMO choice).
+  final VoidCallback? onTap;
+
   @override
   Widget build(BuildContext context) {
-    return DecoratedBox(
+    final pill = DecoratedBox(
       decoration: BoxDecoration(
         color: background,
         borderRadius: AppRadii.pillRadius,
@@ -41,6 +45,17 @@ class StatusPill extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+    if (onTap == null) return pill;
+    return Semantics(
+      button: true,
+      label: label,
+      excludeSemantics: true,
+      child: InkWell(
+        customBorder: const StadiumBorder(),
+        onTap: onTap,
+        child: pill,
       ),
     );
   }

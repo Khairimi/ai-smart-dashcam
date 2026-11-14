@@ -6,6 +6,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_radii.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/widgets.dart';
+import '../../../shared/providers.dart';
 import '../../settings/domain/app_settings.dart';
 import '../../settings/presentation/settings_providers.dart';
 
@@ -35,11 +36,19 @@ class _AudioMusicScreenState extends ConsumerState<AudioMusicScreen> {
     final rows = <(String, String, Widget)>[
       ('System Audio', 'Customize system audio', _toggle(Setting.audioSystem)),
       ('Alert Sound', 'Customize alert sound',
-          const StatusPill(label: 'Standard', background: AppColors.greenToggleBg)),
+          StatusPill(
+              label: alertSounds[ref.watch(alertSoundProvider)],
+              background: AppColors.greenToggleBg,
+              onTap: () => ref
+                  .read(alertSoundProvider.notifier)
+                  .step(alertSounds.length))),
       ('Voice Guidance', 'Customize voice guidance', _toggle(Setting.audioVoice)),
       ('In-Cabin Music', 'Customize in-cabin music', _toggle(Setting.audioCabin)),
     ];
     final aiPref = ref.watch(settingsProvider)[Setting.audioAiPreference];
+    final track = audioTracks[ref.watch(audioTrackProvider)];
+    void skip(int by) =>
+        ref.read(audioTrackProvider.notifier).step(audioTracks.length, by: by);
     return Column(
       children: [
         CreamCard(
@@ -97,24 +106,23 @@ class _AudioMusicScreenState extends ConsumerState<AudioMusicScreen> {
                     children: [
                       Row(children: [
                         Expanded(
-                          child: Text('Calming Music – AI Recommended',
-                              style: AppTypography.cardTitle),
+                          child: Text(track.$1, style: AppTypography.cardTitle),
                         ),
                         const SimulatedBadge(),
                       ]),
                       SizedBox(height: context.u(6)),
-                      Text('Relaxing Ambient  •  30:00',
+                      Text(track.$2,
                           style: AppTypography.caption
                               .copyWith(color: AppColors.textPrimary)),
                       const Spacer(),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          _ctl(Icons.skip_previous, 'Previous', null),
+                          _ctl(Icons.skip_previous, 'Previous', () => skip(-1 + audioTracks.length)),
                           _ctl(_playing ? Icons.pause : Icons.play_arrow,
                               _playing ? 'Pause' : 'Play',
                               () => setState(() => _playing = !_playing)),
-                          _ctl(Icons.skip_next, 'Next', null),
+                          _ctl(Icons.skip_next, 'Next', () => skip(1)),
                         ],
                       ),
                       const Spacer(),
@@ -148,7 +156,7 @@ class _AudioMusicScreenState extends ConsumerState<AudioMusicScreen> {
 
   Widget _ctl(IconData icon, String tip, VoidCallback? onTap) => IconButton(
         tooltip: tip,
-        onPressed: onTap ?? () {},
+        onPressed: onTap,
         iconSize: context.u(30),
         color: AppColors.greenAccent,
         icon: Icon(icon),

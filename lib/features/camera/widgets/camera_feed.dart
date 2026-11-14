@@ -64,6 +64,7 @@ class CameraFeed extends StatelessWidget {
     this.timestamp,
     this.topRight,
     this.overlay,
+    this.off = false,
   });
 
   final CameraScene scene;
@@ -75,14 +76,17 @@ class CameraFeed extends StatelessWidget {
   final Widget? topRight;
   final Widget? overlay;
 
+  /// DEMO camera switched off: shows a dark panel and "CAMERA OFF".
+  final bool off;
+
   @override
   Widget build(BuildContext context) {
     final pad = context.u(14);
     return Stack(
       fit: StackFit.expand,
       children: [
-        CameraFeedPlaceholder(scene: scene),
-        if (timestamp != null)
+        if (off) const _OffPanel() else CameraFeedPlaceholder(scene: scene),
+        if (timestamp != null && !off)
           Positioned(
             left: pad,
             top: pad,
@@ -104,10 +108,38 @@ class CameraFeed extends StatelessWidget {
         Positioned(
           left: pad,
           bottom: pad,
-          child: FeedPill(label: label, background: labelBackground),
+          child: FeedPill(
+              label: off ? 'CAMERA OFF' : label,
+              background: off ? AppColors.surfaceCard : labelBackground),
         ),
         ?overlay,
       ],
+    );
+  }
+}
+
+class _OffPanel extends StatelessWidget {
+  const _OffPanel();
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: AppRadii.cardRadius,
+      child: ColoredBox(
+        color: const Color(0xFF2E2A28),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.videocam_off_outlined,
+                  color: Colors.white70, size: context.u(44)),
+              SizedBox(height: context.u(8)),
+              Text('Camera is off',
+                  style: AppTypography.cardTitle.copyWith(color: Colors.white70)),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

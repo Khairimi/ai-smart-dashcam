@@ -6,6 +6,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/widgets/widgets.dart';
 import '../../shared/providers.dart';
 import 'widgets/camera_feed.dart';
+import 'widgets/camera_toggle.dart';
 import 'widgets/drowsiness_alert_card.dart';
 
 /// Landscape 02 / 02b — Dashcam – Cabin Camera (`48-5657`, `58-6`).
@@ -22,10 +23,15 @@ class CabinCameraScreen extends ConsumerWidget {
       scene: CameraScene.cabin,
       label: 'CABIN CAMERA',
       labelBackground: AppColors.redTint,
-      topRight: PillButton(
-        label: alert ? 'Clear alert' : 'Simulate drowsiness',
-        onPressed: () => notifier.set(!alert),
-      ),
+      off: !ref.watch(cameraOnProvider),
+      topRight: Row(mainAxisSize: MainAxisSize.min, children: [
+        const CameraToggle(),
+        const SizedBox(width: 8),
+        PillButton(
+          label: alert ? 'Clear alert' : 'Simulate drowsiness',
+          onPressed: () => notifier.set(!alert),
+        ),
+      ]),
       overlay: alert
           ? Align(
               alignment: const Alignment(-.78, .1),

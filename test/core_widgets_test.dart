@@ -64,7 +64,7 @@ void main() {
       const CreamCard(child: Text('card')),
       PillButton(label: 'Go', onPressed: () => pressed = true),
     ])));
-    expect(find.text('SIMULATED'), findsOneWidget);
+    expect(find.text('DEMO'), findsOneWidget);
     expect(find.text('Sharing Live'), findsOneWidget);
     expect(find.text('card'), findsOneWidget);
     await tester.tap(find.text('Go'));

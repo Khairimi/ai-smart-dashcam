@@ -5,17 +5,31 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_radii.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/widgets/widgets.dart';
+import 'voice_demo.dart';
 
 /// Landscape 05 — Voice SOS (`48-5810`). Speech recognition is NOT connected:
-/// the "Listening…" / "Command Recognized" chips are static sample states
-/// (SIMULATED). Figma shows a music-note glyph in the circle; kept as drawn.
-class VoiceSosScreen extends StatelessWidget {
+/// "Simulate Voice Command" plays a scripted sequence (see voice_demo.dart).
+/// Figma shows a music-note glyph in the circle; kept as drawn.
+class VoiceSosScreen extends StatefulWidget {
   const VoiceSosScreen({super.key});
+
+  @override
+  State<VoiceSosScreen> createState() => _VoiceSosScreenState();
+}
+
+class _VoiceSosScreenState extends State<VoiceSosScreen> {
+  VoiceStage _stage = VoiceStage.idle;
 
   static const _actions = ['Call 999', 'Call Family', 'Call Spouse', 'Send SOS'];
 
+  Future<void> _simulate() async {
+    if (_stage != VoiceStage.idle) return;
+    await runVoiceDemo(this, onStage: (s) => setState(() => _stage = s));
+  }
+
   @override
   Widget build(BuildContext context) {
+    final busy = _stage != VoiceStage.idle;
     return Column(
       children: [
         Expanded(
@@ -27,13 +41,23 @@ class VoiceSosScreen extends StatelessWidget {
                 Expanded(
                   flex: 2,
                   child: Center(
-                    child: AspectRatio(
-                      aspectRatio: 1,
-                      child: Container(
-                        decoration: const BoxDecoration(
-                            color: AppColors.greenTint, shape: BoxShape.circle),
-                        child: Icon(Icons.music_note,
-                            color: AppColors.greenAccent, size: context.u(40)),
+                    child: GestureDetector(
+                      onTap: _simulate,
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: AppColors.greenTint,
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                                color: _stage == VoiceStage.listening
+                                    ? AppColors.greenAccent
+                                    : Colors.transparent,
+                                width: 3),
+                          ),
+                          child: Icon(Icons.music_note,
+                              color: AppColors.greenAccent, size: context.u(40)),
+                        ),
                       ),
                     ),
                   ),
@@ -45,34 +69,33 @@ class VoiceSosScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Say the command',
-                          style: AppTypography.screenTitle
-                              .copyWith(fontSize: 26)),
-                      SizedBox(height: context.u(14)),
+                          style: AppTypography.screenTitle.copyWith(fontSize: 26)),
+                      SizedBox(height: context.u(10)),
                       Container(
                         padding: EdgeInsets.symmetric(
-                            horizontal: context.u(16), vertical: context.u(10)),
+                            horizontal: context.u(16), vertical: context.u(8)),
                         decoration: BoxDecoration(
                           border: Border.all(color: AppColors.borderCard),
                           borderRadius: AppRadii.tileRadius,
                         ),
-                        child: Text('“SOS, help me”',
+                        child: Text(
+                            _stage == VoiceStage.heard ||
+                                    _stage == VoiceStage.detected
+                                ? '“$voicePhrase”'
+                                : '“SOS, help me”',
                             style: AppTypography.cardTitle
                                 .copyWith(fontWeight: FontWeight.w400)),
                       ),
-                      SizedBox(height: context.u(14)),
-                      Wrap(spacing: context.u(14), runSpacing: 8, children: [
-                        StatusPill(
-                          label: 'Listening…',
-                          leading: Icon(Icons.circle,
-                              size: context.u(8), color: AppColors.greenAccent),
-                        ),
-                        StatusPill(
-                          label: 'Command Recognized',
-                          leading: Icon(Icons.check,
-                              size: context.u(12), color: AppColors.greenAccent),
-                        ),
-                        const SimulatedBadge(),
-                      ]),
+                      SizedBox(height: context.u(10)),
+                      VoiceStageChips(stage: _stage),
+                      SizedBox(height: context.u(12)),
+                      PillButton(
+                        label: busy ? 'Simulating…' : 'Simulate Voice Command',
+                        background: AppColors.greenButton,
+                        foreground: Colors.white,
+                        outlined: false,
+                        onPressed: busy ? null : _simulate,
+                      ),
                     ],
                   ),
                 ),
@@ -96,10 +119,12 @@ class VoiceSosScreen extends StatelessWidget {
                     Expanded(
                       child: PillButton(
                         label: _actions[i],
-                        onPressed: () => showDemoDialog(context,
-                            title: _actions[i],
-                            message:
-                                'Calls and SOS dispatch are not connected in this build.'),
+                        onPressed: () => i == 0
+                            ? showPoliceContactDemo(context)
+                            : showDemoDialog(context,
+                                title: _actions[i],
+                                message:
+                                    'Calls and SOS dispatch are not part of this prototype.'),
                       ),
                     ),
                   ],

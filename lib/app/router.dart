@@ -5,26 +5,28 @@ import 'package:go_router/go_router.dart';
 
 import '../core/layout.dart';
 import '../features/ai/ai_assistant_screen.dart';
+import '../features/ai/mobile_rest_stop_screen.dart';
 import '../features/ai/rest_stop_screen.dart';
 import '../features/camera/cabin_camera_screen.dart';
 import '../features/camera/front_camera_screen.dart';
+import '../features/camera/mobile_camera_screen.dart';
 import '../features/home/home_dashboard_screen.dart';
 import '../features/hub/audio/audio_music_screen.dart';
+import '../features/hub/mobile_hub_screens.dart';
 import '../features/hub/smart_hub_screen.dart';
 import '../features/records/records_alerts_screen.dart';
+import '../features/safety/cabin_monitoring_screen.dart';
 import '../features/safety/parking_security_screen.dart';
 import '../features/sos/accident_alert_screen.dart';
 import '../features/sos/manual_sos_screen.dart';
+import '../features/sos/mobile_sos_screens.dart';
 import '../features/sos/voice_sos_screen.dart';
+import '../features/trips/mobile_trips_screens.dart';
 import '../features/trips/trip_sharing_screen.dart';
 import 'adaptive_screen.dart';
 import 'design_gallery.dart';
 import 'shells.dart';
 
-const _cabinWip =
-    'The Figma frame "03 • AI Cabin Monitoring" is unfinished (empty rows).';
-const _audioWip =
-    'The mobile Audio & Music frame (48-8522) is unfinished (empty rows).';
 const _notCaptured =
     'This Figma frame was not fully captured yet, so it is not implemented.';
 
@@ -64,10 +66,12 @@ GoRouter buildRouter({String? initialLocation}) => GoRouter(
               _r('/camera/front', () => const AdaptiveScreen(
                     title: 'Dashcam – Front Camera',
                     landscape: FrontCameraScreen(),
+                    mobile: MobileCameraScreen(cabin: false),
                   )),
               _r('/camera/cabin', () => const AdaptiveScreen(
                     title: 'Dashcam – Cabin Camera',
                     landscape: CabinCameraScreen(),
+                    mobile: MobileCameraScreen(cabin: true),
                   )),
             ]),
             // Tab 1 — Safety
@@ -75,17 +79,17 @@ GoRouter buildRouter({String? initialLocation}) => GoRouter(
               _r('/safety/parking', () => const ParkingSecurityScreen()),
               _r('/safety/cabin', () => const AdaptiveScreen(
                     title: 'AI Cabin Monitoring',
-                    mobileReason: _cabinWip,
+                    mobile: CabinMonitoringScreen(),
                   )),
               _r('/sos', () => const AdaptiveScreen(
                     title: 'Manual SOS / Guardian Mode',
                     landscape: ManualSosScreen(),
-                    mobileReason: _notCaptured,
+                    mobile: MobileManualSosScreen(),
                   )),
               _r('/sos/voice', () => const AdaptiveScreen(
                     title: 'Voice SOS',
                     landscape: VoiceSosScreen(),
-                    mobileReason: _notCaptured,
+                    mobile: MobileVoiceSosScreen(),
                   )),
             ]),
             // Tab 2 — Records
@@ -98,29 +102,30 @@ GoRouter buildRouter({String? initialLocation}) => GoRouter(
               _r('/hub', () => const AdaptiveScreen(
                     title: 'Smart Hub',
                     landscape: SmartHubScreen(),
+                    mobile: MobileSmartHubScreen(),
                   )),
               _r('/hub/audio', () => const AdaptiveScreen(
                     title: 'Audio & Music',
                     landscape: AudioMusicScreen(),
-                    mobileReason: _audioWip,
+                    mobile: MobileAudioScreen(),
                   )),
             ]),
             // Tab 3 — Trips
             StatefulShellBranch(routes: [
               _r('/trips/find-car', () => const AdaptiveScreen(
                     title: 'Find My Car',
-                    mobileReason: _notCaptured,
+                    mobile: FindMyCarScreen(),
                     landscapeReason: _notCaptured,
                   )),
               _r('/trips/find-car/saved', () => const AdaptiveScreen(
                     title: 'Saved Parking',
-                    mobileReason: _notCaptured,
+                    mobile: SavedParkingScreen(),
                     landscapeReason: _notCaptured,
                   )),
               _r('/trips/share', () => const AdaptiveScreen(
                     title: 'Trip Sharing',
                     landscape: TripSharingScreen(),
-                    mobileReason: _notCaptured,
+                    mobile: MobileTripSharingScreen(),
                   )),
             ]),
             // Tab 4 — Nexio AI
@@ -129,6 +134,7 @@ GoRouter buildRouter({String? initialLocation}) => GoRouter(
               _r('/ai/rest-stop', () => const AdaptiveScreen(
                     title: 'Nearby Rest Stop',
                     landscape: RestStopScreen(),
+                    mobile: MobileRestStopScreen(),
                   )),
             ]),
           ],

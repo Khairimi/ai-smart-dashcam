@@ -6,9 +6,12 @@ import '../theme/app_typography.dart';
 
 /// "● REC 00:12:34" pill. Time is passed in; the shipped source is simulated.
 class RecIndicator extends StatelessWidget {
-  const RecIndicator({super.key, required this.elapsed});
+  const RecIndicator({super.key, required this.elapsed, this.active = true});
 
   final Duration elapsed;
+
+  /// `false` = the (DEMO) camera is switched off.
+  final bool active;
 
   static String format(Duration d) {
     String two(int n) => n.toString().padLeft(2, '0');
@@ -17,6 +20,17 @@ class RecIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (!active) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: AppColors.surfaceCard,
+          borderRadius: AppRadii.pillRadius,
+          border: Border.all(color: AppColors.borderCard),
+        ),
+        child: Text('CAMERA OFF', style: AppTypography.caption),
+      );
+    }
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(

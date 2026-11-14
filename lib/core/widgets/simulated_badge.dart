@@ -4,8 +4,8 @@ import '../theme/app_colors.dart';
 import '../theme/app_radii.dart';
 import '../theme/app_typography.dart';
 
-/// Mandatory marker for any value fed by a Simulated* adapter
-/// (ARCHITECTURE.md "Hardware/AI honesty rule"). Not part of the Figma design.
+/// Marks simulated (DEMO) content: nothing behind it is real. Not part of the
+/// Figma design.
 class SimulatedBadge extends StatelessWidget {
   const SimulatedBadge({super.key});
 
@@ -17,7 +17,7 @@ class SimulatedBadge extends StatelessWidget {
         color: AppColors.purpleTint,
         borderRadius: AppRadii.pillRadius,
       ),
-      child: Text('SIMULATED',
+      child: Text('DEMO',
           style: AppTypography.caption
               .copyWith(fontSize: 9, fontWeight: FontWeight.w700)),
     );

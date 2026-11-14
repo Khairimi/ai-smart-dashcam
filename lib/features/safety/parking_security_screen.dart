@@ -129,6 +129,10 @@ class _Landscape extends ConsumerWidget {
                             icon: Icons.warning_amber_rounded,
                             title: 'Motion Detected',
                             subtitle: 'Recent parking event',
+                            onTap: () => showDemoDialog(context,
+                                title: 'Motion Detected',
+                                message:
+                                    'Sample parking event: motion near the vehicle at 8:36 PM.'),
                             scale: context.u(1),
                             iconSize: context.u(34),
                           ),
@@ -141,6 +145,10 @@ class _Landscape extends ConsumerWidget {
                             icon: Icons.crop_square_outlined,
                             title: 'Impact Detected',
                             subtitle: 'Evidence captured automatically',
+                            onTap: () => showDemoDialog(context,
+                                title: 'Impact Detected',
+                                message:
+                                    'Sample parking event: impact recorded and locked as evidence.'),
                             scale: context.u(1),
                             iconSize: context.u(34),
                           ),
@@ -244,27 +252,39 @@ class _Mobile extends ConsumerWidget {
                     const SimulatedBadge(),
                   ]),
                   const SizedBox(height: 10),
-                  Row(children: [
-                    _carThumb(w: 84, h: 48),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Motion Detected', style: AppTypography.label),
-                          Text('Today, 8:36 PM', style: AppTypography.caption),
-                        ],
+                  InkWell(
+                    onTap: () => showDemoDialog(context,
+                        title: 'Motion Detected',
+                        message:
+                            'Sample parking event: motion near the vehicle at 8:36 PM.'),
+                    child: Row(children: [
+                      _carThumb(w: 84, h: 48),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Motion Detected', style: AppTypography.label),
+                            Text('Today, 8:36 PM', style: AppTypography.caption),
+                          ],
+                        ),
                       ),
-                    ),
-                  ]),
+                    ]),
+                  ),
                   const Divider(height: 20, color: AppColors.borderCard),
-                  Row(children: [
-                    _carThumb(w: 84, h: 48),
-                    const SizedBox(width: 12),
-                    Expanded(
-                        child: Text('Impact Detected',
-                            style: AppTypography.label)),
-                  ]),
+                  InkWell(
+                    onTap: () => showDemoDialog(context,
+                        title: 'Impact Detected',
+                        message:
+                            'Sample parking event: impact recorded and locked as evidence.'),
+                    child: Row(children: [
+                      _carThumb(w: 84, h: 48),
+                      const SizedBox(width: 12),
+                      Expanded(
+                          child: Text('Impact Detected',
+                              style: AppTypography.label)),
+                    ]),
+                  ),
                 ],
               ),
             ),

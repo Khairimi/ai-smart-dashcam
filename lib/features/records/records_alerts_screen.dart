@@ -6,6 +6,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/widgets/widgets.dart';
 import 'records_evidence_screen.dart';
+import '../../shared/demo_data.dart';
 import '../settings/domain/app_settings.dart';
 import '../settings/presentation/settings_providers.dart';
 
@@ -27,8 +28,9 @@ class _Landscape extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final gap = context.u(16);
     final settings = ref.watch(settingsProvider);
-    void soon(String t) => showDemoDialog(context,
-        title: t, message: 'Evidence storage and incident logs are not connected yet.');
+    void open(String t) => showSampleListDialog(context,
+        title: t,
+        items: t.contains('Vault') ? sampleRecordings : sampleIncidents);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -38,7 +40,7 @@ class _Landscape extends ConsumerWidget {
             Expanded(
               child: CreamCard(
                 color: AppColors.blueTint,
-                onTap: () => soon('Smart Incident Evidence Vault'),
+                onTap: () => open('Smart Incident Evidence Vault'),
                 padding: EdgeInsets.all(context.u(20)),
                 child: SizedBox(
                   width: double.infinity,
@@ -59,7 +61,7 @@ class _Landscape extends ConsumerWidget {
             SizedBox(height: gap),
             Expanded(
               child: CreamCard(
-                onTap: () => soon('Road Incident Report Log'),
+                onTap: () => open('Road Incident Report Log'),
                 padding: EdgeInsets.all(context.u(20)),
                 child: SizedBox(
                   width: double.infinity,

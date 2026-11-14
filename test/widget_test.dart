@@ -134,7 +134,7 @@ void main() {
       }
     });
 
-    testWidgets('tabs switch branches; unfinished tab is INCOMPLETE',
+    testWidgets('the five tabs switch branches (Trips opens Find My Car demo)',
         (tester) async {
       await _pump(tester, '/home', _phone);
       await tester.tap(find.text('Safety'));
@@ -145,7 +145,8 @@ void main() {
       expect(find.text('Protected Recordings'), findsOneWidget);
       await tester.tap(find.text('Trips'));
       await tester.pumpAndSettle();
-      expect(find.text('INCOMPLETE'), findsOneWidget);
+      expect(find.text('Level B2 • Bay A-18'), findsOneWidget);
+      expect(find.text('INCOMPLETE'), findsNothing);
       await tester.tap(find.text('Nexio Ai'));
       await tester.pumpAndSettle();
       expect(find.text('Road Safety Assistance'), findsOneWidget);
@@ -157,13 +158,14 @@ void main() {
       expect(find.text('Emergency Actions'), findsOneWidget);
     });
 
-    testWidgets('home quick action Manual SOS is INCOMPLETE on mobile',
+    testWidgets('home quick action Manual SOS opens the mobile demo screen',
         (tester) async {
       await _pump(tester, '/home', _phone);
       await tester.ensureVisible(find.text('Manual SOS'));
       await tester.tap(find.text('Manual SOS'));
       await tester.pumpAndSettle();
-      expect(find.text('INCOMPLETE'), findsOneWidget);
+      expect(find.text('Emergency SOS'), findsOneWidget);
+      expect(find.text('INCOMPLETE'), findsNothing);
     });
   });
 

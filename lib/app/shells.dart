@@ -80,6 +80,11 @@ class InCarShell extends ConsumerWidget {
                   InCarHeader(
                     title: _titles[path] ?? 'AI Smart Dashcam',
                     recElapsed: elapsed,
+                    cameraOn: ref.watch(cameraOnProvider),
+                    onCloud: () => showDemoDialog(context,
+                        title: 'Cloud & Alerts',
+                        message:
+                            'Cloud sync: connected (sample). 1 new alert: "Motion detected" at 8:36 PM.'),
                     onBack: () => context.canPop()
                         ? context.pop()
                         : context.go(backTarget(path)),

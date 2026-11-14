@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/widgets/widgets.dart';
+import '../../shared/demo_data.dart';
 
 /// Mobile "Records & Evidence" (`9-4`). Recordings are SIMULATED samples.
 class RecordsEvidenceMobile extends StatelessWidget {
@@ -10,8 +11,17 @@ class RecordsEvidenceMobile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    void soon(String t) => showDemoDialog(context,
-        title: t, message: 'Evidence storage is not connected yet.');
+    void soon(String t) {
+      if (t.contains('Vault')) {
+        showSampleListDialog(context, title: t, items: sampleRecordings);
+      } else if (t.contains('Log')) {
+        showSampleListDialog(context, title: t, items: sampleIncidents);
+      } else {
+        showDemoDialog(context,
+            title: 'Playing: $t',
+            message: 'Sample clip preview. Playback is a demo.');
+      }
+    }
     const recent = [
       ('Accident Evidence', 'Pre & post incident • 00:30'),
       ('Hit-and-Run', 'Parking impact • 00:24'),

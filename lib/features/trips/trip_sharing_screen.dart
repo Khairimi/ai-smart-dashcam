@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/layout.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/widgets.dart';
+import '../../shared/demo_data.dart';
 import '../../shared/providers.dart';
 import '../camera/widgets/camera_feed.dart';
 
@@ -79,7 +80,14 @@ class TripSharingScreen extends ConsumerWidget {
                   Expanded(
                     child: PillButton(
                         label: 'Stop Sharing',
-                        onPressed: sharing ? () => notifier.set(false) : null),
+                        onPressed: sharing
+                            ? () {
+                                notifier.set(false);
+                                ref
+                                    .read(tripHistoryProvider.notifier)
+                                    .addSharedTrip();
+                              }
+                            : null),
                   ),
                   SizedBox(width: context.u(8)),
                   Expanded(

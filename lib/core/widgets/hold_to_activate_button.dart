@@ -46,6 +46,7 @@ class _HoldToActivateButtonState extends State<HoldToActivateButton>
   @override
   Widget build(BuildContext context) {
     return Semantics(
+      container: true, // its own accessibility node (not merged into the banner)
       button: true,
       label: widget.label,
       hint: 'Press and hold for ${widget.duration.inSeconds} seconds',
