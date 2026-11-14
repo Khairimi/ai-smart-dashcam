@@ -64,8 +64,12 @@ class _HoldToActivateButtonState extends State<HoldToActivateButton>
                 Positioned.fill(
                   child: Align(
                     alignment: Alignment.centerLeft,
+                    // heightFactor: 1 is required. A child-less ColoredBox
+                    // sizes to constraints.smallest, and without a tight
+                    // height the fill was laid out 0 px tall (invisible).
                     child: FractionallySizedBox(
                       widthFactor: _c.value,
+                      heightFactor: 1,
                       child: ColoredBox(color: widget.fill),
                     ),
                   ),

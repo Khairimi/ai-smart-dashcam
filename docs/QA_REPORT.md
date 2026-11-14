@@ -159,14 +159,38 @@ results at 320 px were from unrendered pages and were discarded. The final run w
 
 `flutter analyze`: PASS. `flutter build web --release`: PASS.
 
-### Hold-to-activate progress fill (SOS screen) — observed FAIL, not fixed
+### Hold-to-activate progress fill (SOS screen) — FIXED and verified
 
-Tested in a real, non-headless Chrome window (`/sos`, 1672×941): pressing and holding "Hold to Activate SOS" for 1.0 s and
-1.4 s shows **no progress fill** (`docs/qa-screenshots/interaction/L_sos_holding_headful_1_4s.png`), although a full 2 s hold
-does open the DEMO dialog and an early release does not. Probable cause (from reading the code, not yet verified by a fix):
-the fill is a child-less `ColoredBox` inside a `FractionallySizedBox` with no `heightFactor`, so it is laid out with zero
-height; setting `heightFactor: 1` would be the likely one-line fix in `lib/core/widgets/hold_to_activate_button.dart`.
-Outside the approved scope of this fix, so left unchanged pending approval.
+**Cause (confirmed from the Flutter source):** the fill was a child-less `ColoredBox` inside
+`FractionallySizedBox(widthFactor: …)` with no `heightFactor`. `RenderProxyBox` with no child sizes to
+`constraints.smallest` (`rendering/proxy_box.dart:125`, not overridden by `_RenderColoredBox`), and the height constraint was
+loose (0…H), so the fill was 0 px tall and `paint()` skipped it (`size > Size.zero` false). Activation logic was unaffected.
+
+**Fix:** `heightFactor: 1` in `lib/core/widgets/hold_to_activate_button.dart` (one line + comment). No other behaviour changed;
+the activation still only shows the existing DEMO dialog (no call, no dispatch).
+
+**Real Chrome test** (non-headless window, 1672×941, `/sos`; fill measured by sampling pixels of the button; baseline 5% =
+red banner corners in the crop):
+
+| Step | Result |
+|---|---|
+| Idle | 5% (baseline) |
+| Held ≈0.5 s / ≈0.8 s | fill 52% → 79% (net of baseline: grows while holding) |
+| Early release (held 1.56 s < 2 s) | fill back to baseline, no dialog |
+| Full hold (held 4.5 s, longer than 2 s) | exactly 1 "SOS activated" DEMO dialog at 2.6 s, still 1 at 4.5 s and after release |
+| After dismissing the dialog | 0 dialogs, fill back to baseline |
+| Hold-duration threshold (no captures during the hold) | 0.6 / 1.2 / 1.7 s: no activation; 2.3 s: activation |
+
+Screenshots: `docs/qa-screenshots/hold-fix/`.
+
+Harness note: until Chrome was started with `--disable-renderer-backgrounding`, `--disable-backgrounding-occluded-windows`,
+`--disable-background-timer-throttling` and the page was brought to the front, animation frames were paused while nothing
+forced a repaint, which made a 1 s hold appear to activate. Those earlier timing results were a harness artifact and were
+discarded; they are not evidence about the app.
+
+**Widget tests added** (`test/hold_to_activate_button_test.dart`, 3 tests): fill is full-height and grows while held and does
+not activate early; early release resets progress without activating; a full hold activates exactly once even if held longer
+and progress resets afterwards. Not runnable locally (Smart App Control); results are taken from GitHub Actions below.
 
 ### Updated verdict
 
