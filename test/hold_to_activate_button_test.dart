@@ -32,6 +32,9 @@ void main() {
     var count = 0;
     await _pump(tester, () => count++);
     final g = await tester.startGesture(tester.getCenter(find.byType(HoldToActivateButton)));
+    // A Ticker measures elapsed time from the first frame after forward();
+    // this zero-length pump schedules that start frame.
+    await tester.pump();
 
     await tester.pump(const Duration(milliseconds: 500));
     final s1 = tester.getSize(_fillFinder);
@@ -52,6 +55,9 @@ void main() {
     var count = 0;
     await _pump(tester, () => count++);
     final g = await tester.startGesture(tester.getCenter(find.byType(HoldToActivateButton)));
+    // A Ticker measures elapsed time from the first frame after forward();
+    // this zero-length pump schedules that start frame.
+    await tester.pump();
     await tester.pump(const Duration(milliseconds: 800));
     expect(tester.getSize(_fillFinder).width, greaterThan(0));
 
@@ -66,6 +72,9 @@ void main() {
     var count = 0;
     await _pump(tester, () => count++);
     final g = await tester.startGesture(tester.getCenter(find.byType(HoldToActivateButton)));
+    // A Ticker measures elapsed time from the first frame after forward();
+    // this zero-length pump schedules that start frame.
+    await tester.pump();
 
     await tester.pump(const Duration(milliseconds: 2100));
     expect(count, 1);
