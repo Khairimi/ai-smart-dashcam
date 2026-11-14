@@ -74,6 +74,8 @@ class _MobileAudioScreenState extends ConsumerState<MobileAudioScreen> {
   Widget build(BuildContext context) {
     const card = AppColors.surfaceCardMobile;
     final track = audioTracks[ref.watch(audioTrackProvider)];
+    void cycleAlert() =>
+        ref.read(alertSoundProvider.notifier).step(alertSounds.length);
     void skip(int by) =>
         ref.read(audioTrackProvider.notifier).step(audioTracks.length, by: by);
     final rows = <(String, String, Widget)>[
@@ -97,6 +99,7 @@ class _MobileAudioScreenState extends ConsumerState<MobileAudioScreen> {
               title: r.$1,
               subtitle: r.$2,
               trailing: r.$3,
+              onTap: r.$1 == 'Alert Sound' ? cycleAlert : null,
               color: card),
           const SizedBox(height: 8),
         ],

@@ -57,16 +57,19 @@ class CloudDot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    void open() => showDemoDialog(context,
+        title: 'Cloud & Alerts',
+        message:
+            'Cloud sync: connected (sample). 1 new alert: "Motion detected" at 8:36 PM.');
     return Semantics(
+      container: true,
       button: true,
       label: 'Cloud and alerts',
+      onTap: open,
       excludeSemantics: true,
       child: InkResponse(
         radius: 22,
-        onTap: () => showDemoDialog(context,
-            title: 'Cloud & Alerts',
-            message:
-                'Cloud sync: connected (sample). 1 new alert: "Motion detected" at 8:36 PM.'),
+        onTap: open,
         child: const Padding(
           padding: EdgeInsets.all(4),
           child: Stack(

@@ -47,6 +47,8 @@ class _AudioMusicScreenState extends ConsumerState<AudioMusicScreen> {
     ];
     final aiPref = ref.watch(settingsProvider)[Setting.audioAiPreference];
     final track = audioTracks[ref.watch(audioTrackProvider)];
+    void cycleAlert() =>
+        ref.read(alertSoundProvider.notifier).step(alertSounds.length);
     void skip(int by) =>
         ref.read(audioTrackProvider.notifier).step(audioTracks.length, by: by);
     return Column(
@@ -84,6 +86,7 @@ class _AudioMusicScreenState extends ConsumerState<AudioMusicScreen> {
                           title: r.$1,
                           subtitle: r.$2,
                           trailing: r.$3,
+                          onTap: r.$1 == 'Alert Sound' ? cycleAlert : null,
                           iconSize: context.u(34),
                           scale: context.u(1),
                         ),

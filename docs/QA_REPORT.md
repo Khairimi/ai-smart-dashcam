@@ -205,3 +205,27 @@ checks and the hold-to-activate behaviour verified in real Chrome. Remaining ite
 Voice SOS circle size and spare space (landscape), taller Records rows (landscape), small quick-nav/header icons, vector
 placeholders for camera/map art, ellipsis in "Dashcam Con…"/"Recordin…" at 320 px, and all Figma values (colours, fonts, sizes)
 still sampled/estimated rather than read from Inspect. Mobile screens without Figma frames remain INCOMPLETE placeholders.
+
+## Demo fast-track (clickable presentation prototype)
+
+Scope: every visible control responds; all data is static sample data held in memory. No backend, GPS, camera, AI, calls or SMS.
+
+| Check | Result |
+|---|---|
+| `flutter analyze`, `flutter build web --release` | PASS |
+| CI run 43570787181 (`2f44c38`): analyze, all tests, release build | PASS |
+| Cold-load overflow check (debug build, console watched): 14 mobile routes at 390 and 320 px, 11 landscape routes at 1672 px, plus the camera / voice / audio routes | PASS, no overflow or layout exceptions |
+| Click-through in real Chrome, mobile and landscape (`docs/qa-screenshots/demo/`) | 19/20 scripted checks PASS; the 20th (mobile "Next track") confirmed on screenshot `flows2/m_audio_next.png` (the page's track title is not exposed in the accessibility tree the script reads) |
+
+Flows verified in the browser:
+- Camera ON/OFF on landscape and mobile (header and Home status update); Home dashcam card opens the mobile camera screen.
+- Voice SOS: "Simulate Voice Command" -> Listening -> Heard "Please help me" -> Emergency Detected (simulated) -> Police Contact (DEMO) with
+  "Simulation only — no emergency call has been made." Call 999 opens the same DEMO dialog.
+- Cloud icon, Home Live Location card, Alert Sound, Next track, Evidence Vault and Incident Log lists.
+
+Defects found and fixed in this pass: hold button and cloud icon were merged into parent accessibility nodes (each now has its own node and a tap
+action); the Alert Sound pill's tap was swallowed by its row (the whole row now cycles); "Recording On" was truncated.
+
+Remaining limitations: sample data resets on restart (only the 12 settings toggles persist); the mobile Home shortcuts and the mobile camera / hub /
+trips / parking screens are not in Figma (built from existing components); landscape has no Home / Accident / Find My Car screens (INCOMPLETE and
+not reachable from the UI); local `flutter test` is blocked on the owner's PC, so CI is the test runner.

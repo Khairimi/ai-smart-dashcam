@@ -49,8 +49,10 @@ class StatusPill extends StatelessWidget {
     );
     if (onTap == null) return pill;
     return Semantics(
+      container: true,
       button: true,
       label: label,
+      onTap: onTap,
       excludeSemantics: true,
       child: InkWell(
         customBorder: const StadiumBorder(),
