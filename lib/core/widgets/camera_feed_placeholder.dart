@@ -5,8 +5,15 @@ import '../theme/app_radii.dart';
 
 enum CameraScene { front, cabin }
 
-/// Flat vector stand-in for the Figma camera illustrations (sky / trees / road
-/// for front; cabin interior for cabin). Approximate geometry — not a live feed.
+/// Locally bundled DEMO camera pictures (AI-generated sample images, not a
+/// live feed). Both are registered in pubspec.yaml.
+const kFrontCameraAsset = 'assets/images/dashcam_front.jpg';
+const kCabinCameraAsset = 'assets/images/dashcam_cabin.jpg';
+
+/// DEMO camera picture: road-facing (front) or driver/passenger-facing
+/// (cabin) sample image, scaled with BoxFit.cover so it is cropped, never
+/// stretched. If the asset cannot be loaded, a flat vector scene is drawn
+/// instead. No camera, permission or network is involved.
 class CameraFeedPlaceholder extends StatelessWidget {
   const CameraFeedPlaceholder({super.key, this.scene = CameraScene.front});
 
@@ -14,11 +21,24 @@ class CameraFeedPlaceholder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final fallback = CustomPaint(
+      painter: _ScenePainter(scene),
+      child: const SizedBox.expand(),
+    );
     return ClipRRect(
       borderRadius: AppRadii.cardRadius,
-      child: CustomPaint(
-        painter: _ScenePainter(scene),
-        child: const SizedBox.expand(),
+      child: SizedBox.expand(
+        child: Image.asset(
+          scene == CameraScene.front ? kFrontCameraAsset : kCabinCameraAsset,
+          fit: BoxFit.cover,
+          alignment: Alignment.center,
+          filterQuality: FilterQuality.medium,
+          gaplessPlayback: true,
+          semanticLabel: scene == CameraScene.front
+              ? 'Demo front camera preview'
+              : 'Demo cabin camera preview',
+          errorBuilder: (context, error, stack) => fallback,
+        ),
       ),
     );
   }

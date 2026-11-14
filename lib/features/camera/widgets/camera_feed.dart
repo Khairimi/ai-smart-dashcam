@@ -76,7 +76,8 @@ class CameraFeed extends StatelessWidget {
   final Widget? topRight;
   final Widget? overlay;
 
-  /// DEMO camera switched off: shows a dark panel and "CAMERA OFF".
+  /// DEMO camera switched off: hides the picture and shows "Front Camera OFF"
+  /// or "Cabin Camera OFF" (the FRONT / CABIN CAMERA label is kept).
   final bool off;
 
   @override
@@ -85,7 +86,7 @@ class CameraFeed extends StatelessWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
-        if (off) const _OffPanel() else CameraFeedPlaceholder(scene: scene),
+        if (off) _OffPanel(scene: scene) else CameraFeedPlaceholder(scene: scene),
         if (timestamp != null && !off)
           Positioned(
             left: pad,
@@ -108,9 +109,7 @@ class CameraFeed extends StatelessWidget {
         Positioned(
           left: pad,
           bottom: pad,
-          child: FeedPill(
-              label: off ? 'CAMERA OFF' : label,
-              background: off ? AppColors.surfaceCard : labelBackground),
+          child: FeedPill(label: label, background: labelBackground),
         ),
         ?overlay,
       ],
@@ -119,7 +118,9 @@ class CameraFeed extends StatelessWidget {
 }
 
 class _OffPanel extends StatelessWidget {
-  const _OffPanel();
+  const _OffPanel({required this.scene});
+
+  final CameraScene scene;
 
   @override
   Widget build(BuildContext context) {
@@ -134,7 +135,7 @@ class _OffPanel extends StatelessWidget {
               Icon(Icons.videocam_off_outlined,
                   color: Colors.white70, size: context.u(44)),
               SizedBox(height: context.u(8)),
-              Text('Camera is off',
+              Text(scene == CameraScene.front ? 'Front Camera OFF' : 'Cabin Camera OFF',
                   style: AppTypography.cardTitle.copyWith(color: Colors.white70)),
             ],
           ),

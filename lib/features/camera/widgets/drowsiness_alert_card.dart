@@ -34,10 +34,15 @@ class DrowsinessAlertCard extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                   style: AppTypography.cardTitle),
             ),
+            SizedBox(width: context.u(8)),
+            const SimulatedBadge(),
           ]),
           SizedBox(height: context.u(8)),
           Text('You seem tired. Please take a short break',
               style: AppTypography.body),
+          SizedBox(height: context.u(4)),
+          Text('DEMO — simulated driver-fatigue warning, no real detection.',
+              style: AppTypography.caption),
           SizedBox(height: context.u(14)),
           Row(children: [
             Expanded(

@@ -34,9 +34,9 @@ class CabinCameraScreen extends ConsumerWidget {
       ]),
       overlay: alert
           ? Align(
-              alignment: const Alignment(-.78, .1),
+              alignment: const Alignment(0, .72),
               child: FractionallySizedBox(
-                widthFactor: .5,
+                widthFactor: .6,
                 child: DrowsinessAlertCard(
                   onFindRestStop: () {
                     notifier.set(false);

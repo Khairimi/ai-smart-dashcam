@@ -1,5 +1,6 @@
 import 'package:ai_smart_dashcam/core/storage/in_memory_store.dart';
-import 'package:flutter/material.dart' show Icons;
+import 'package:ai_smart_dashcam/core/widgets/camera_feed_placeholder.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'helpers/app_harness.dart';
@@ -19,9 +20,9 @@ void main() {
       await tester.tap(find.text('Camera ON'));
       await tester.pumpAndSettle();
       expect(find.text('Camera OFF'), findsOneWidget);
-      expect(find.text('Camera is off'), findsOneWidget);
-      expect(find.text('CAMERA OFF'), findsWidgets); // header pill + feed label
-      expect(find.text('FRONT CAMERA'), findsNothing);
+      expect(find.text('Front Camera OFF'), findsOneWidget);
+      expect(find.text('CAMERA OFF'), findsOneWidget); // header REC pill
+      expect(find.text('FRONT CAMERA'), findsOneWidget); // label is kept
 
       await tester.tap(find.text('Camera OFF'));
       await tester.pumpAndSettle();
@@ -34,10 +35,11 @@ void main() {
       await land(tester, '/camera/cabin');
       await tester.tap(find.text('Camera ON'));
       await tester.pumpAndSettle();
-      expect(find.text('Camera is off'), findsOneWidget);
+      expect(find.text('Cabin Camera OFF'), findsOneWidget);
+      expect(find.text('CABIN CAMERA'), findsOneWidget); // label is kept
       await tester.tap(find.text('Front Camera'));
       await tester.pumpAndSettle();
-      expect(find.text('Camera is off'), findsOneWidget);
+      expect(find.text('Front Camera OFF'), findsOneWidget);
     });
 
     testWidgets('mobile: Home camera card and tile open the camera screen',
@@ -64,7 +66,7 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Camera OFF'), findsOneWidget);
       expect(find.text('Camera Off — not recording'), findsOneWidget);
-      expect(find.text('Camera is off'), findsOneWidget);
+      expect(find.text('Front Camera OFF'), findsOneWidget);
 
       await tester.tap(find.text('Home'));
       await tester.pumpAndSettle();
@@ -79,6 +81,68 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Dashcam – Cabin Camera'), findsOneWidget);
       expect(find.text('CABIN CAMERA'), findsOneWidget);
+    });
+  });
+
+  group('camera previews (bundled DEMO images)', () {
+    testWidgets('front and cabin use different, cropped (BoxFit.cover) images',
+        (tester) async {
+      await land(tester, '/camera/front');
+      var img = tester.widget<Image>(find.byType(Image));
+      expect(img.fit, BoxFit.cover);
+      final front = (img.image as AssetImage).assetName;
+      expect(front, 'assets/images/dashcam_front.jpg');
+
+      await land(tester, '/camera/cabin');
+      img = tester.widget<Image>(find.byType(Image));
+      expect(img.fit, BoxFit.cover);
+      expect((img.image as AssetImage).assetName,
+          'assets/images/dashcam_cabin.jpg');
+    });
+
+    testWidgets('a missing image falls back to the vector scene without errors',
+        (tester) async {
+      await tester.pumpWidget(const MaterialApp(
+        home: SizedBox(
+            width: 300,
+            height: 160,
+            child: CameraFeedPlaceholder(scene: CameraScene.cabin)),
+      ));
+      final img = tester.widget<Image>(find.byType(Image));
+      // Simulate a load failure of the same widget.
+      final fallback = img.errorBuilder!(
+          tester.element(find.byType(Image)), Exception('missing'), null);
+      expect(fallback, isA<CustomPaint>());
+    });
+
+    testWidgets('landscape cabin: Simulate drowsiness shows a DEMO warning and '
+        'it can be dismissed', (tester) async {
+      await land(tester, '/camera/cabin');
+      await tester.tap(find.text('Simulate drowsiness'));
+      await tester.pumpAndSettle();
+      expect(find.text('Driver Drowsiness Detected'), findsOneWidget);
+      expect(find.textContaining('DEMO — simulated driver-fatigue warning'),
+          findsOneWidget);
+      await tester.tap(find.text('Ignore'));
+      await tester.pumpAndSettle();
+      expect(find.text('Driver Drowsiness Detected'), findsNothing);
+
+      await tester.tap(find.text('Simulate drowsiness'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Clear alert'));
+      await tester.pumpAndSettle();
+      expect(find.text('Driver Drowsiness Detected'), findsNothing);
+    });
+
+    testWidgets('the alert still works while the camera is OFF',
+        (tester) async {
+      await land(tester, '/camera/cabin');
+      await tester.tap(find.text('Camera ON'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Simulate drowsiness'));
+      await tester.pumpAndSettle();
+      expect(find.text('Cabin Camera OFF'), findsOneWidget);
+      expect(find.text('Driver Drowsiness Detected'), findsOneWidget);
     });
   });
 
