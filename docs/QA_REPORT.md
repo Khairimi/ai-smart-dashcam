@@ -52,8 +52,8 @@ Observations: in the headless run the Inter font was not visibly applied (Roboto
 | Visual check, mobile 390 × 844 (home, parking, records, AI, accident, incomplete) | PASS (by eye) | iframe of exact size inside headless Chrome (plain `--window-size` is clamped to ~500 px) |
 | Visual check, mobile 375 × 812 and 320 × 568 (home, AI, accident, parking) | PASS (by eye) | No overflow stripes/clipping seen; "Dashcam Connected" truncates to an ellipsis at 320 px |
 | Browser console | PASS | Only the Flutter bootstrap info line |
-| Widget tests (`test/widget_test.dart`: 13 route/interaction tests; `test/core_widgets_test.dart`: 7; total 20) | **BLOCKED locally** | Smart App Control blocks `flutter_tester.exe`. **CI has not run** — no pass is claimed. |
-| GitHub Actions (`.github/workflows/ci.yml`) | **NOT RUN** | Workflow committed locally only; nothing pushed |
+| Widget tests (`test/widget_test.dart`: 13 route/interaction tests; `test/core_widgets_test.dart`: 7; total 20) | **BLOCKED locally; PASS in CI** | Locally blocked by Smart App Control. In GitHub Actions (Linux) run 43561171890 on `07dada3`: `flutter test` succeeded, all 20 tests passed. |
+| GitHub Actions (`.github/workflows/ci.yml`) | **PASS** | Run 43561171890 (`07dada3`): analyze, test (20/20), `flutter build web --release` all succeeded. An earlier run (43560793814, `e52aa4c`) failed 3 mobile tests: `LayoutBuilder` inside `IntrinsicHeight` at `home_dashboard_screen.dart:94`; fixed in `07dada3`. |
 
 Caveats: the release build does not paint RenderFlex overflow stripes, so overflow was judged visually. Flutter's test
 font (Ahem) makes overflow assertions meaningless; the widget tests deliberately ignore overflow errors.
