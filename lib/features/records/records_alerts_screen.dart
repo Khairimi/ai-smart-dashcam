@@ -5,8 +5,9 @@ import '../../core/layout.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/widgets/widgets.dart';
-import '../../shared/providers.dart';
 import 'records_evidence_screen.dart';
+import '../settings/domain/app_settings.dart';
+import '../settings/presentation/settings_providers.dart';
 
 /// Records — landscape 09 "Records & Safety Alerts" (`48-6019`) and mobile
 /// "Records & Evidence" (`9-4`). Alert toggles are local state only; no ADAS
@@ -25,7 +26,7 @@ class _Landscape extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final gap = context.u(16);
-    final toggles = ref.watch(togglesProvider);
+    final settings = ref.watch(settingsProvider);
     void soon(String t) => showDemoDialog(context,
         title: t, message: 'Evidence storage and incident logs are not connected yet.');
     return Row(
@@ -94,9 +95,9 @@ class _Landscape extends ConsumerWidget {
                 ]),
                 SizedBox(height: context.u(8)),
                 for (final e in const [
-                  ('alerts.fcw', 'Forward Collision Warning'),
-                  ('alerts.ldw', 'Lane Departure Warning'),
-                  ('alerts.sls', 'Speed Limit Recognition'),
+                  (Setting.alertForwardCollision, 'Forward Collision Warning'),
+                  (Setting.alertLaneDeparture, 'Lane Departure Warning'),
+                  (Setting.alertSpeedLimit, 'Speed Limit Recognition'),
                 ])
                   Expanded(
                     child: Padding(
@@ -108,9 +109,9 @@ class _Landscape extends ConsumerWidget {
                         iconSize: context.u(34),
                         scale: context.u(1),
                         trailing: OnToggleChip(
-                          value: toggles[e.$1] ?? false,
+                          value: settings[e.$1],
                           onChanged: (v) =>
-                              ref.read(togglesProvider.notifier).set(e.$1, v),
+                              ref.read(settingsProvider.notifier).set(e.$1, v),
                         ),
                       ),
                     ),

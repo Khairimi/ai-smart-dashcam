@@ -8,6 +8,8 @@ import '../../core/theme/app_radii.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/widgets/widgets.dart';
 import '../../shared/providers.dart';
+import '../settings/domain/app_settings.dart';
+import '../settings/presentation/settings_providers.dart';
 
 /// Nexio AI — landscape 10 (`48-6070`) and mobile "AI Assistant" (`9-356`).
 /// Replies come from a SIMULATED service; no AI model or microphone is used.
@@ -197,7 +199,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
   }
 
   Widget _mobile(BuildContext context) {
-    final restOn = ref.watch(togglesProvider)['ai.restBreak'] ?? false;
+    final restOn = ref.watch(settingsProvider)[Setting.aiRestBreak];
     const items = [
       ('Forward Collision Warning', 'Potential collision risk ahead'),
       ('Lane Departure Warning', 'Unintentional lane drift'),
@@ -258,7 +260,7 @@ class _AiAssistantScreenState extends ConsumerState<AiAssistantScreen> {
               trailing: OnToggleChip(
                 value: restOn,
                 onChanged: (v) =>
-                    ref.read(togglesProvider.notifier).set('ai.restBreak', v),
+                    ref.read(settingsProvider.notifier).set(Setting.aiRestBreak, v),
               ),
             ),
           ],

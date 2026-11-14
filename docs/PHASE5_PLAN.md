@@ -368,7 +368,8 @@ notifications, Vercel deployment, merging into `main`, redesigning any approved 
 | Step | Status |
 |---|---|
 | 5.1 Plan | **Approved with conditions** (2026-11-14) |
-| 5.2 Settings and storage foundation | **In progress** — report to follow; local commit only, not pushed |
+| 5.2 Settings and storage foundation | **Done as a small feature** (typed settings persisted via shared_preferences). Scope reduced by the demo fast-track (below). |
+| **Demo fast-track** (owner, 2026-11-14) | **Supersedes 5.3–5.6**: presentation prototype, in-memory demo data, no further persistence work. |
 | 5.3 Events + recordings | not started |
 | 5.4 Trips | not started |
 | 5.5 Parking records | not started |

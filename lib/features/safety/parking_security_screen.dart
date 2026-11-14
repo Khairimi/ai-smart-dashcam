@@ -6,7 +6,8 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_radii.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/widgets/widgets.dart';
-import '../../shared/providers.dart';
+import '../settings/domain/app_settings.dart';
+import '../settings/presentation/settings_providers.dart';
 
 /// Parking & Vehicle Security — landscape `48-5853` and mobile `4-427`.
 /// Toggles are local state. "Recent alerts" are SIMULATED sample entries; no
@@ -19,11 +20,11 @@ class ParkingSecurityScreen extends ConsumerWidget {
       context.isMobile ? const _Mobile() : const _Landscape();
 }
 
-Widget _toggle(WidgetRef ref, String key) {
-  final on = ref.watch(togglesProvider)[key] ?? false;
+Widget _toggle(WidgetRef ref, Setting setting) {
+  final on = ref.watch(settingsProvider)[setting];
   return OnToggleChip(
     value: on,
-    onChanged: (v) => ref.read(togglesProvider.notifier).set(key, v),
+    onChanged: (v) => ref.read(settingsProvider.notifier).set(setting, v),
   );
 }
 
@@ -33,6 +34,8 @@ class _Landscape extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final gap = context.u(16);
+    // Decision D2: reflects the real toggle state.
+    final guardianOn = ref.watch(settingsProvider).parkingGuardianOn;
     return Column(
       children: [
         Expanded(
@@ -57,9 +60,11 @@ class _Landscape extends ConsumerWidget {
                 ]),
                 Align(
                   alignment: Alignment.centerRight,
-                  child: Text('Parking Guardian On',
-                      style: AppTypography.caption
-                          .copyWith(color: AppColors.greenAccent)),
+                  child: Text(guardianOn ? 'Parking Guardian On' : 'Parking Guardian Off',
+                      style: AppTypography.caption.copyWith(
+                          color: guardianOn
+                              ? AppColors.greenAccent
+                              : AppColors.textSecondary)),
                 ),
               ],
             ),
@@ -82,9 +87,9 @@ class _Landscape extends ConsumerWidget {
                           style: AppTypography.cardTitle),
                       SizedBox(height: context.u(8)),
                       for (final e in const [
-                        ('parking.motion', 'Motion Detection'),
-                        ('parking.impact', 'Impact Detection'),
-                        ('parking.auto', 'Auto Recording'),
+                        (Setting.parkingMotion, 'Motion Detection'),
+                        (Setting.parkingImpact, 'Impact Detection'),
+                        (Setting.parkingAuto, 'Auto Recording'),
                       ])
                         Expanded(
                           child: Padding(
@@ -168,6 +173,9 @@ class _Mobile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Decision D2: the mobile banner has no guardian text in Figma, so only the
+    // all-off state replaces the subtitle.
+    final guardianOn = ref.watch(settingsProvider).parkingGuardianOn;
     return ColoredBox(
       color: AppColors.bgCreamMobile,
       child: SafeArea(
@@ -189,8 +197,11 @@ class _Mobile extends ConsumerWidget {
                     children: [
                       Text('✓ Parking Mode Active',
                           style: AppTypography.cardTitle),
-                      const Text('Monitoring your vehicle',
-                          style: TextStyle(fontSize: 11)),
+                      Text(
+                          guardianOn
+                              ? 'Monitoring your vehicle'
+                              : 'Parking Guardian Off',
+                          style: const TextStyle(fontSize: 11)),
                     ],
                   ),
                 ),
@@ -205,9 +216,9 @@ class _Mobile extends ConsumerWidget {
                   Text('Smart Parking Guardian', style: AppTypography.cardTitle),
                   const SizedBox(height: 12),
                   for (final e in const [
-                    ('parking.motion', 'Motion Detection'),
-                    ('parking.impact', 'Impact Detection'),
-                    ('parking.auto', 'Auto Recording'),
+                    (Setting.parkingMotion, 'Motion Detection'),
+                    (Setting.parkingImpact, 'Impact Detection'),
+                    (Setting.parkingAuto, 'Auto Recording'),
                   ])
                     Padding(
                       padding: const EdgeInsets.only(bottom: 8),

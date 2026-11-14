@@ -6,7 +6,8 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_radii.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/widgets/widgets.dart';
-import '../../shared/providers.dart';
+import '../settings/domain/app_settings.dart';
+import '../settings/presentation/settings_providers.dart';
 
 /// Landscape 04 — Manual SOS / Guardian Mode (`48-5810`… see SCREEN_MAPPING).
 /// Hold-to-activate is a real gesture, but activation only shows a DEMO
@@ -16,7 +17,7 @@ class ManualSosScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final discreet = ref.watch(discreetModeProvider);
+    final discreet = ref.watch(settingsProvider)[Setting.sosDiscreetMode];
     final gap = context.u(14);
     return Column(
       children: [
@@ -129,7 +130,7 @@ class ManualSosScreen extends ConsumerWidget {
               background:
                   discreet ? AppColors.greenToggleBg : AppColors.surfaceCard,
               onPressed: () =>
-                  ref.read(discreetModeProvider.notifier).set(!discreet),
+                  ref.read(settingsProvider.notifier).set(Setting.sosDiscreetMode, !discreet),
             ),
           ),
           SizedBox(width: gap),

@@ -15,32 +15,6 @@ final recElapsedProvider = StreamProvider<Duration>(
   (ref) => ref.watch(dashcamDeviceProvider).recordingElapsed(),
 );
 
-/// Default values of every local toggle (keys are used across screens).
-const Map<String, bool> kDefaultToggles = {
-  'parking.motion': true,
-  'parking.impact': true,
-  'parking.auto': true,
-  'audio.system': true,
-  'audio.voice': true,
-  'audio.cabin': true,
-  'audio.aiPref': true,
-  'alerts.fcw': true,
-  'alerts.ldw': true,
-  'alerts.sls': true,
-  'ai.restBreak': true,
-};
-
-/// Local (in-memory) toggle state. Not persisted yet.
-class TogglesNotifier extends Notifier<Map<String, bool>> {
-  @override
-  Map<String, bool> build() => kDefaultToggles;
-
-  void set(String key, bool value) => state = {...state, key: value};
-}
-
-final togglesProvider =
-    NotifierProvider<TogglesNotifier, Map<String, bool>>(TogglesNotifier.new);
-
 /// Simple local boolean flag.
 class FlagNotifier extends Notifier<bool> {
   FlagNotifier(this._initial);
@@ -59,8 +33,4 @@ final tripSharingProvider =
 /// Drowsiness alert overlay on the cabin camera. Triggered manually through a
 /// SIMULATED control — there is no real detection.
 final drowsinessAlertProvider =
-    NotifierProvider<FlagNotifier, bool>(() => FlagNotifier(false));
-
-/// Discreet mode on Manual SOS.
-final discreetModeProvider =
     NotifierProvider<FlagNotifier, bool>(() => FlagNotifier(false));

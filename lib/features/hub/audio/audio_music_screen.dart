@@ -6,7 +6,8 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_radii.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/widgets/widgets.dart';
-import '../../../shared/providers.dart';
+import '../../settings/domain/app_settings.dart';
+import '../../settings/presentation/settings_providers.dart';
 
 /// Landscape 08 — Audio & Music (`48-5958`). Toggles are local state. The
 /// player and the "AI recommended" track are DEMO only: no audio plays.
@@ -20,11 +21,11 @@ class AudioMusicScreen extends ConsumerStatefulWidget {
 class _AudioMusicScreenState extends ConsumerState<AudioMusicScreen> {
   bool _playing = false;
 
-  Widget _toggle(String key) {
-    final on = ref.watch(togglesProvider)[key] ?? false;
+  Widget _toggle(Setting setting) {
+    final on = ref.watch(settingsProvider)[setting];
     return OnToggleChip(
       value: on,
-      onChanged: (v) => ref.read(togglesProvider.notifier).set(key, v),
+      onChanged: (v) => ref.read(settingsProvider.notifier).set(setting, v),
     );
   }
 
@@ -32,13 +33,13 @@ class _AudioMusicScreenState extends ConsumerState<AudioMusicScreen> {
   Widget build(BuildContext context) {
     final gap = context.u(14);
     final rows = <(String, String, Widget)>[
-      ('System Audio', 'Customize system audio', _toggle('audio.system')),
+      ('System Audio', 'Customize system audio', _toggle(Setting.audioSystem)),
       ('Alert Sound', 'Customize alert sound',
           const StatusPill(label: 'Standard', background: AppColors.greenToggleBg)),
-      ('Voice Guidance', 'Customize voice guidance', _toggle('audio.voice')),
-      ('In-Cabin Music', 'Customize in-cabin music', _toggle('audio.cabin')),
+      ('Voice Guidance', 'Customize voice guidance', _toggle(Setting.audioVoice)),
+      ('In-Cabin Music', 'Customize in-cabin music', _toggle(Setting.audioCabin)),
     ];
-    final aiPref = ref.watch(togglesProvider)['audio.aiPref'] ?? false;
+    final aiPref = ref.watch(settingsProvider)[Setting.audioAiPreference];
     return Column(
       children: [
         CreamCard(
@@ -138,7 +139,7 @@ class _AudioMusicScreenState extends ConsumerState<AudioMusicScreen> {
                   'Music Preference (AI Suggestion)  •  ${aiPref ? 'On' : 'Off'}',
                   style: AppTypography.label),
             ),
-            _toggle('audio.aiPref'),
+            _toggle(Setting.audioAiPreference),
           ]),
         ),
       ],
