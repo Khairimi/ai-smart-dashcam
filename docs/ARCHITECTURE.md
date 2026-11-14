@@ -50,3 +50,16 @@ Every value that would come from the dashcam, an AI model or GPS goes through an
 2. **Toolchain:** Flutter cannot be installed in Claude's sandbox (pub.dev and Google storage are blocked), so code written here can't be compiled or tested here. Verification would have to happen in GitHub Actions or on your machine.
 3. **Auth:** No login screen exists in Figma. Should Firebase Auth be added (needs a designed screen), or should the app be anonymous/demo for now?
 4. **Mobile gaps:** Frames 02/04/05/06/07 were only partly captured, and one frame (`48-8522`) is unfinished.
+
+## Phase 5 addendum (PROPOSED — not approved, nothing implemented)
+
+Detail and rationale: `docs/PHASE5_PLAN.md`. Summary of what would change in the architecture above:
+
+- **Local persistence (new):** `shared_preferences` behind a `KeyValueStore` interface; one versioned JSON document per
+  collection (`dashcam.v1.*`). This is the "repositories first" layer the Backend row already anticipates, so Firestore (or SQLite)
+  can replace it later without UI changes. No Firebase, no login, no cloud in Phase 5.
+- **State:** typed `AppSettings` (replaces the string-keyed toggles map); `AsyncNotifier` providers for trips, parking records,
+  safety events and recording metadata, giving loading / empty / error states; an injectable `Clock`.
+- **Simulation rule unchanged:** all hardware/AI/GPS-derived data is simulated, flagged `simulated: true` and shown with the
+  SIMULATED badge. No real calls, SMS or dispatch; `url_launcher` is not used for them (removal proposed).
+- **Privacy rule:** only non-sensitive demo metadata is stored; no real phone numbers, coordinates or device identifiers.
