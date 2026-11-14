@@ -129,25 +129,20 @@ class HomeDashboardScreen extends StatelessWidget {
                           ])
                             Padding(
                               padding: const EdgeInsets.only(bottom: 6),
-                              child: LayoutBuilder(
-                                builder: (context, c) => c.maxWidth < 140
-                                    ? Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(r.$1,
-                                              style: AppTypography.caption),
-                                          StatusPill(label: r.$2),
-                                        ],
-                                      )
-                                    : Row(children: [
-                                        Expanded(
-                                            child: Text(r.$1,
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                                style: AppTypography.caption)),
-                                        StatusPill(label: r.$2),
-                                      ]),
+                              // Wrap (not LayoutBuilder): this sits inside an
+                              // IntrinsicHeight, which forbids LayoutBuilder.
+                              // Label and pill share a row when they fit and
+                              // stack on narrow phones.
+                              child: SizedBox(
+                                width: double.infinity,
+                                child: Wrap(
+                                  alignment: WrapAlignment.spaceBetween,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  children: [
+                                    Text(r.$1, style: AppTypography.caption),
+                                    StatusPill(label: r.$2),
+                                  ],
+                                ),
                               ),
                             ),
                         ],
